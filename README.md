@@ -1,4 +1,7 @@
-Bosch Sensortec BMP180, BMP280, BME280, BMP388 temperature, atmospheric pressure and humidity sensors
+NOTE: This is an in-progress port of the bsbmp library to the ADS1115
+It's a mess until this warning is removed
+
+Texas Instruments ADS1115 four channel A/d
 =============================================================================================
 
 [![Build Status](https://travis-ci.org/d2r2/go-bsbmp.svg?branch=master)](https://travis-ci.org/d2r2/go-bsbmp)
