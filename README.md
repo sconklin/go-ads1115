@@ -1,18 +1,22 @@
-Bosch Sensortec BMP180, BMP280, BME280, BMP388 temperature, atmospheric pressure and humidity sensors
+NOTE: This is an in-progress port of the bsbmp library to the ADS1115
+
+It's a mess until this warning is removed
+
+=======================================================================================================
+
+Texas Instruments ADS1115 four channel A/d
 =============================================================================================
 
 [![Build Status](https://travis-ci.org/d2r2/go-bsbmp.svg?branch=master)](https://travis-ci.org/d2r2/go-bsbmp)
-[![Go Report Card](https://goreportcard.com/badge/github.com/d2r2/go-bsbmp)](https://goreportcard.com/report/github.com/d2r2/go-bsbmp)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sconklin/go-ads1115)](https://goreportcard.com/report/github.com/sconklin/go-ads1115)
 [![GoDoc](https://godoc.org/github.com/d2r2/go-bsbmp?status.svg)](https://godoc.org/github.com/d2r2/go-bsbmp)
 [![MIT License](http://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-BMP180 ([pdf reference](https://raw.github.com/d2r2/go-bsbmp/master/docs/BST-BMP180-DS000-09.pdf)), BMP280 ([pdf reference](https://raw.github.com/d2r2/go-bsbmp/master/docs/BST-BMP280-DS001-11.pdf)) and BME280 ([pdf reference](https://raw.github.com/d2r2/go-bsbmp/master/docs/BST-BME280_DS001-12.pdf)) are populare sensors among Arduino and Raspberry PI developers.
+ADS1115 ([pdf reference](https://raw.github.com/sconklin/go-ads1115/master/docs/ads1115.pdf)), is an A/D converter used by Arduino and Raspberry PI developers.
 Sensors are compact and quite accurately measuring, working via i2c bus interface:
-![image](https://raw.github.com/d2r2/go-bsbmp/master/docs/bmp180_bmp280_bme280_1.jpg)
+![image](https://raw.github.com/sconklin/go-ads1115/master/docs/adafruit_1085.jpg)
 
-BMP388 ([pdf reference](https://raw.github.com/d2r2/go-bsbmp/master/docs/BST-BMP388-DS001-11.pdf)) is the next generation of the BMP280.  Improved temperature coefficient, and the addition of a FIFO. Parameters measured are Temperature and Absolute Atmospheric Pressure.
-
-Here is a library written in [Go programming language](https://golang.org/) for Raspberry PI and counterparts, which gives you in the output temperature and atmospheric pressure values (making all necessary i2c-bus interracting and values computing).
+This is a library written in [Go programming language](https://golang.org/) for Raspberry PI and counterparts, which gives you the ability to program the A/D and read the data. (Handling all necessary i2c-bus communication).
 
 Golang usage
 ------------
@@ -69,16 +73,16 @@ func main() {
 Getting help
 ------------
 
-GoDoc [documentation](http://godoc.org/github.com/d2r2/go-bsbmp)
+GoDoc [documentation](http://godoc.org/github.com/sconklin/go-ads1115)
 
 Installation
 ------------
 
 ```bash
-$ go get -u github.com/d2r2/go-bsbmp
+$ go get -u github.com/sconklin/go-ads1115
 ```
 
-Troubleshoting
+Troubleshooting
 --------------
 
 - *How to obtain fresh Golang installation to RPi device (either any RPi clone):*
@@ -108,19 +112,20 @@ to discover address occupied by peripheral device. To install utility you should
 	70: -- -- -- -- -- -- 76 --    
 	```
 
-Contribute authors
+Contributing authors
 ------------------
 
-* [Kevin Rowett](https://github.com/K6TD): new sensor BMP388 support implementation.
+* [Denis Dyakov](https://github.com/d2r2): Original sensor go library for the BMP388, with associated I2C and logging libraries
+* [Kevin Rowett](https://github.com/K6TD): new sensor BMP388 support implementation in origigal library.
 
 
 Contact
 -------
 
-Please use [Github issue tracker](https://github.com/d2r2/go-bsbmp/issues) for filing bugs or feature requests.
+Please use [Github issue tracker](https://github.com/sconklin/go-ads1115/issues) for filing bugs or feature requests.
 
 
 License
 -------
 
-Go-bsbmp is licensed under MIT License.
+Go-ads1115 is licensed under MIT License.

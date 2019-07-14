@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/d2r2/go-bsbmp"
-	"github.com/d2r2/go-i2c"
-	logger "github.com/d2r2/go-logger"
+	"github.com/sconklin/go-ads1115"
+	"github.com/sconklin/go-i2c"
+	logger "github.com/sconklin/go-logger"
+	"time"
 )
 
 var lg = logger.NewPackageLogger("main",
@@ -15,74 +16,98 @@ func main() {
 	defer logger.FinalizeLogger()
 	// Create new connection to i2c-bus on 1 line with address 0x76.
 	// Use i2cdetect utility to find device address over the i2c-bus
-	i2c, err := i2c.NewI2C(0x76, 0)
+	i2c, err := i2c.NewI2C(0x48, 0)
 	if err != nil {
 		lg.Fatal(err)
 	}
 	defer i2c.Close()
 
 	lg.Notify("***************************************************************************************************")
-	lg.Notify("*** You can change verbosity of output, to modify logging level of modules \"i2c\", \"bsbmp\"")
+	lg.Notify("*** You can change verbosity of output, to modify logging level of modules \"i2c\", \"ads1115\"")
 	lg.Notify("*** Uncomment/comment corresponding lines with call to ChangePackageLogLevel(...)")
 	lg.Notify("***************************************************************************************************")
 	// Uncomment/comment next lines to suppress/increase verbosity of output
 	logger.ChangePackageLogLevel("i2c", logger.InfoLevel)
-	logger.ChangePackageLogLevel("bsbmp", logger.InfoLevel)
+	logger.ChangePackageLogLevel("ads", logger.InfoLevel)
 
-	// sensor, err := bsbmp.NewBMP(bsbmp.BMP180, i2c) // signature=0x55
-	sensor, err := bsbmp.NewBMP(bsbmp.BMP280, i2c) // signature=0x58
-	// sensor, err := bsbmp.NewBMP(bsbmp.BME280, i2c) // signature=0x60
-	// sensor, err := bsbmp.NewBMP(bsbmp.BMP388, i2c) // signature=0x50
+	sensor, err := ads.NewADS(ads.ADS1115, i2c) // signature=0x58
+
 	if err != nil {
 		lg.Fatal(err)
 	}
 
-	id, err := sensor.ReadSensorID()
+	config, err := sensor.ReadConfig()
 	if err != nil {
 		lg.Fatal(err)
 	}
-	lg.Infof("This Bosch Sensortec sensor has signature: 0x%x", id)
+	lg.Infof("This A/D has initial config: 0x%x", config)
 
-	err = sensor.IsValidCoefficients()
+	err = sensor.SetMuxMode(ads.MUX_SINGLE_0)
 	if err != nil {
 		lg.Fatal(err)
 	}
+	lg.Infof("  Configured for Single Ended Channel 0")
 
-	// Read temperature in celsius degree
-	t, err := sensor.ReadTemperatureC(bsbmp.ACCURACY_STANDARD)
+	err = sensor.SetPgaMode(ads.PGA_0_256)
 	if err != nil {
 		lg.Fatal(err)
 	}
-	lg.Infof("Temprature = %v*C", t)
+	lg.Infof("  Configured for +/- 128 mV Full Scale")
 
-	// Read atmospheric pressure in pascal
-	p, err := sensor.ReadPressurePa(bsbmp.ACCURACY_LOW)
+	err = sensor.SetConversionMode(ads.MODE_CONTINUOUS)
 	if err != nil {
 		lg.Fatal(err)
 	}
-	lg.Infof("Pressure = %v Pa", p)
+	lg.Infof("  Configured for continuous sampling")
 
-	// Read atmospheric pressure in mmHg
-	p, err = sensor.ReadPressureMmHg(bsbmp.ACCURACY_LOW)
+	err = sensor.SetDataRate(ads.RATE_8)
 	if err != nil {
 		lg.Fatal(err)
 	}
-	lg.Infof("Pressure = %v mmHg", p)
+	lg.Infof("  Configured for 8 Samples per Second")
 
-	// Read atmospheric pressure in mmHg
-	supported, h1, err := sensor.ReadHumidityRH(bsbmp.ACCURACY_LOW)
-	if supported {
+	err = sensor.SetComparatorMode(ads.COMP_MODE_TRADITIONAL)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured for traditional comparator mode")
+
+	err = sensor.SetComparatorPolarity(ads.COMP_POL_ACTIVE_LOW)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured comparator active low")
+
+	err = sensor.SetComparatorLatch(ads.COMP_LAT_OFF)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured comparator latch off")
+
+	err = sensor.SetComparatorQueue(ads.COMP_QUE_DISABLE)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured comparator queue disabled")
+
+	err = sensor.WriteConfig()
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Wrote new Config to A/D")
+
+	config, err = sensor.ReadConfig()
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("This A/D has final config: 0x%x", config)
+
+	for i := 1; i < 5; i++ {
+		time.Sleep(2 * time.Second)
+		val, err := sensor.ReadConversion()
 		if err != nil {
 			lg.Fatal(err)
 		}
-		lg.Infof("Humidity = %v %%", h1)
+		lg.Infof("A/D value: 0x%x", val)
 	}
-
-	// Read atmospheric altitude in meters above sea level, if we assume
-	// that pressure at see level is equal to 101325 Pa.
-	a, err := sensor.ReadAltitude(bsbmp.ACCURACY_LOW)
-	if err != nil {
-		lg.Fatal(err)
-	}
-	lg.Infof("Altitude = %v m", a)
 }
