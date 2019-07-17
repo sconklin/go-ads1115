@@ -21,7 +21,7 @@
 //
 //--------------------------------------------------------------------------------------------------
 
-// Package implements controlling the A/D and reading sampled values for the ADS1115 A/D Converter
+// Package ads implements controlling the A/D and reading sampled values for the ADS1115 A/D Converter
 package ads
 
 import (
@@ -61,15 +61,15 @@ const (
 
 // PGAMode : Programmable Gain Amplifier config
 const (
-	PGA_6_144  = 0 // Full Scale Range = +/- 6.144V
-	PGA_4_096  = 1 // Full Scale Range = +/- 4.096V
-	PGA_2_048  = 2 // Full Scale Range = +/- 2.048V
-	PGA_1_024  = 3 // Full Scale Range = +/- 1.024V
-	PGA_0_512  = 4 // Full Scale Range = +/- 0.512V
-	PGA_0_256  = 5 // Full Scale Range = +/- 0.128V
-	PGA_0_256a = 6 // Full Scale Range = +/- 0.128V
-	PGA_0_256b = 7 // Full Scale Range = +/- 0.128V
-	PGA_MAX    = 7
+	PGA_6_144 = 0 // Full Scale Range = +/- 6.144V
+	PGA_4_096 = 1 // Full Scale Range = +/- 4.096V
+	PGA_2_048 = 2 // Full Scale Range = +/- 2.048V
+	PGA_1_024 = 3 // Full Scale Range = +/- 1.024V
+	PGA_0_512 = 4 // Full Scale Range = +/- 0.512V
+	PGA_0_256 = 5 // Full Scale Range = +/- 0.128V
+	// PGA_0_256a = 6 // Full Scale Range = +/- 0.128V
+	// PGA_0_256b = 7 // Full Scale Range = +/- 0.128V
+	PGA_MAX = 5
 )
 
 // Mode : Conversion Mode
@@ -236,19 +236,19 @@ func (v *ADS) SetComparatorMode(cm uint16) error {
 	return err
 }
 
-//	SetComparatorPolarity in stored config
+// SetComparatorPolarity in stored config
 func (v *ADS) SetComparatorPolarity(cp uint16) error {
 	err := v.ads.SetComparatorPolarity(cp)
 	return err
 }
 
-//	SetComparatorLatch in stored config
+// SetComparatorLatch in stored config
 func (v *ADS) SetComparatorLatch(cl uint16) error {
 	err := v.ads.SetComparatorLatch(cl)
 	return err
 }
 
-//	SetComparatorQueue in stored config
+// SetComparatorQueue in stored config
 func (v *ADS) SetComparatorQueue(cq uint16) error {
 	err := v.ads.SetComparatorQueue(cq)
 	return err

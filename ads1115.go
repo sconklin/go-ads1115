@@ -128,7 +128,7 @@ func (v *SensorADS1115) SetComparatorMode(cm uint16) error {
 	return nil
 }
 
-//	SetComparatorPolarity in stored config
+// SetComparatorPolarity in stored config
 func (v *SensorADS1115) SetComparatorPolarity(cp uint16) error {
 	if cp > COMP_POL_MAX {
 		return errors.New("Invalid value for Comparator Polarity")
@@ -137,7 +137,7 @@ func (v *SensorADS1115) SetComparatorPolarity(cp uint16) error {
 	return nil
 }
 
-//	SetComparatorLatch in stored config
+// SetComparatorLatch in stored config
 func (v *SensorADS1115) SetComparatorLatch(cl uint16) error {
 	if cl > COMP_LAT_MAX {
 		return errors.New("Invalid value for Comparator Latch")
@@ -146,7 +146,7 @@ func (v *SensorADS1115) SetComparatorLatch(cl uint16) error {
 	return nil
 }
 
-//	SetComparatorQueue in stored config
+// SetComparatorQueue in stored config
 func (v *SensorADS1115) SetComparatorQueue(cq uint16) error {
 	if cq > COMP_QUE_MAX {
 		return errors.New("Invalid value for Comparator Queue")
