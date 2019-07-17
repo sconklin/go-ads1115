@@ -7,13 +7,13 @@ It's a mess until this warning is removed
 Texas Instruments ADS1115 four channel A/d
 =============================================================================================
 
-[![Build Status](https://travis-ci.org/d2r2/go-bsbmp.svg?branch=master)](https://travis-ci.org/d2r2/go-bsbmp)
+[![Build Status](https://travis-ci.org/sconklin/go-bsbmp.svg?branch=master)](https://travis-ci.org/sconklin/go-ads1115)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sconklin/go-ads1115)](https://goreportcard.com/report/github.com/sconklin/go-ads1115)
-[![GoDoc](https://godoc.org/github.com/d2r2/go-bsbmp?status.svg)](https://godoc.org/github.com/d2r2/go-bsbmp)
+[![GoDoc](https://godoc.org/github.com/sconklin/go-ads1115?status.svg)](https://godoc.org/github.com/sconklin/go-ads1115)
 [![MIT License](http://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 ADS1115 ([pdf reference](https://raw.github.com/sconklin/go-ads1115/master/docs/ads1115.pdf)), is an A/D converter used by Arduino and Raspberry PI developers.
-Sensors are compact and quite accurately measuring, working via i2c bus interface:
+The A/D works with the i2c bus interface:
 ![image](https://raw.github.com/sconklin/go-ads1115/master/docs/adafruit_1085.jpg)
 
 This is a library written in [Go programming language](https://golang.org/) for Raspberry PI and counterparts, which gives you the ability to program the A/D and read the data. (Handling all necessary i2c-bus communication).
@@ -26,7 +26,7 @@ Golang usage
 func main() {
 	// Create new connection to i2c-bus on 1 line with address 0x76.
 	// Use i2cdetect utility to find device address over the i2c-bus
-	i2c, err := i2c.NewI2C(0x76, 1)
+	i2c, err := i2c.NewI2C(0x48, 1)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,41 +34,89 @@ func main() {
 	// Uncomment next line to supress verbose output
 	//logger.ChangePackageLogLevel("i2c", logger.InfoLevel)
 
-	sensor, err := bsbmp.NewBMP(bsbmp.BMP280, i2c)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Uncomment next line to supress verbose output
-	//logger.ChangePackageLogLevel("bsbmp", logger.InfoLevel)
+	sensor, err := ads.NewADS(ads.ADS1115, i2c) // signature=0x58
 
-	// Read temperature in celsius degree
-	t, err := sensor.ReadTemperatureC(bsbmp.ACCURACY_STANDARD)
 	if err != nil {
-		log.Fatal(err)
+		lg.Fatal(err)
 	}
-	log.Printf("Temprature = %v*C\n", t)
-	// Read atmospheric pressure in pascal
-	p, err := sensor.ReadPressurePa(bsbmp.ACCURACY_STANDARD)
+
+	config, err := sensor.ReadConfig()
 	if err != nil {
-		log.Fatal(err)
+		lg.Fatal(err)
 	}
-	log.Printf("Pressure = %v Pa\n", p)
-	// Read atmospheric pressure in mmHg
-	p1, err := sensor.ReadPressureMmHg(bsbmp.ACCURACY_STANDARD)
+	lg.Infof("This A/D has initial config: 0x%x", config)
+
+	err = sensor.SetMuxMode(ads.MUX_SINGLE_0)
 	if err != nil {
-		log.Fatal(err)
+		lg.Fatal(err)
 	}
-	log.Printf("Pressure = %v mmHg\n", p1)
-	// Read atmospheric altitude in meters above sea level, if we assume
-	// that pressure at see level is equal to 101325 Pa.
-	a, err := sensor.ReadAltitude(bsbmp.ACCURACY_STANDARD)
+	lg.Infof("  Configured for Single Ended Channel 0")
+
+	err = sensor.SetPgaMode(ads.PGA_0_256)
 	if err != nil {
-		log.Fatal(err)
+		lg.Fatal(err)
 	}
-	log.Printf("Altitude = %v m\n", a)
+	lg.Infof("  Configured for +/- 128 mV Full Scale")
+
+	err = sensor.SetConversionMode(ads.MODE_CONTINUOUS)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured for continuous sampling")
+
+	err = sensor.SetDataRate(ads.RATE_8)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured for 8 Samples per Second")
+
+	err = sensor.SetComparatorMode(ads.COMP_MODE_TRADITIONAL)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured for traditional comparator mode")
+
+	err = sensor.SetComparatorPolarity(ads.COMP_POL_ACTIVE_LOW)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured comparator active low")
+
+	err = sensor.SetComparatorLatch(ads.COMP_LAT_OFF)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured comparator latch off")
+
+	err = sensor.SetComparatorQueue(ads.COMP_QUE_DISABLE)
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Configured comparator queue disabled")
+
+	err = sensor.WriteConfig()
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("  Wrote new Config to A/D")
+
+	config, err = sensor.ReadConfig()
+	if err != nil {
+		lg.Fatal(err)
+	}
+	lg.Infof("This A/D has final config: 0x%x", config)
+
+	for i := 1; i < 5; i++ {
+		time.Sleep(2 * time.Second)
+		val, err := sensor.ReadConversion()
+		if err != nil {
+			lg.Fatal(err)
+		}
+		lg.Infof("A/D value: 0x%x", val)
+	}
 }
+    
 ```
-
 
 Getting help
 ------------
@@ -116,7 +164,7 @@ Contributing authors
 ------------------
 
 * [Denis Dyakov](https://github.com/d2r2): Original sensor go library for the BMP388, with associated I2C and logging libraries
-* [Kevin Rowett](https://github.com/K6TD): new sensor BMP388 support implementation in origigal library.
+* [Steve Conklin](https://github.com/sconklin): Port of the library for ads-1115.
 
 
 Contact
