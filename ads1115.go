@@ -35,6 +35,7 @@ const (
 	ADS1115_ADDR_HI_THRESH  = 3
 )
 
+// SensorADS1115 contains internal register config items
 type SensorADS1115 struct {
 	ads                      SensorInterface
 	MuxConfig                uint16
@@ -64,7 +65,7 @@ func (v *SensorADS1115) ReadConfig(i2c *i2c.I2C) (uint16, error) {
 
 // WriteConfig sets the config register from the stored config
 func (v *SensorADS1115) WriteConfig(i2c *i2c.I2C) error {
-	var cfgdata uint16 = 0
+	var cfgdata uint16
 
 	cfgdata = config.ComparatorQueueConfig & 0x03
 	cfgdata |= (config.ComparatorLatchConfig & 1) << 2
@@ -82,6 +83,7 @@ func (v *SensorADS1115) WriteConfig(i2c *i2c.I2C) error {
 	return nil
 }
 
+// SetMuxMode sets the stored config
 func (v *SensorADS1115) SetMuxMode(imm uint16) error {
 	if imm > MUX_MAX {
 		return errors.New("Invalid value for Mux Mode")
@@ -90,7 +92,7 @@ func (v *SensorADS1115) SetMuxMode(imm uint16) error {
 	return nil
 }
 
-// Set the Programmable Gain Amplifier in config
+// SetPgaMode in config
 func (v *SensorADS1115) SetPgaMode(pm uint16) error {
 	if pm > PGA_MAX {
 		return errors.New("Invalid value for PGA Mode")
@@ -99,7 +101,7 @@ func (v *SensorADS1115) SetPgaMode(pm uint16) error {
 	return nil
 }
 
-// Set the conversion mode in stored config
+// SetConversionMode in stored config
 func (v *SensorADS1115) SetConversionMode(md uint16) error {
 	if md > MODE_MAX {
 		return errors.New("Invalid value for Conversion Mode")
@@ -108,7 +110,7 @@ func (v *SensorADS1115) SetConversionMode(md uint16) error {
 	return nil
 }
 
-// Set the data rate in stored config
+// SetDataRate in stored config
 func (v *SensorADS1115) SetDataRate(dr uint16) error {
 	if dr > RATE_MAX {
 		return errors.New("Invalid value for Data Rate")
@@ -117,7 +119,7 @@ func (v *SensorADS1115) SetDataRate(dr uint16) error {
 	return nil
 }
 
-// Set the comparator mode in stored config
+// SetComparatorMode in stored config
 func (v *SensorADS1115) SetComparatorMode(cm uint16) error {
 	if cm > COMP_MODE_MAX {
 		return errors.New("Invalid value for Comparator Mode")
@@ -126,7 +128,7 @@ func (v *SensorADS1115) SetComparatorMode(cm uint16) error {
 	return nil
 }
 
-//	Set the comparator polarity in stored config
+//	SetComparatorPolarity in stored config
 func (v *SensorADS1115) SetComparatorPolarity(cp uint16) error {
 	if cp > COMP_POL_MAX {
 		return errors.New("Invalid value for Comparator Polarity")
@@ -135,7 +137,7 @@ func (v *SensorADS1115) SetComparatorPolarity(cp uint16) error {
 	return nil
 }
 
-//	Set the comparator latch in stored config
+//	SetComparatorLatch in stored config
 func (v *SensorADS1115) SetComparatorLatch(cl uint16) error {
 	if cl > COMP_LAT_MAX {
 		return errors.New("Invalid value for Comparator Latch")
@@ -144,7 +146,7 @@ func (v *SensorADS1115) SetComparatorLatch(cl uint16) error {
 	return nil
 }
 
-//	Set the comparator queue in stored config
+//	SetComparatorQueue in stored config
 func (v *SensorADS1115) SetComparatorQueue(cq uint16) error {
 	if cq > COMP_QUE_MAX {
 		return errors.New("Invalid value for Comparator Queue")
@@ -153,7 +155,7 @@ func (v *SensorADS1115) SetComparatorQueue(cq uint16) error {
 	return nil
 }
 
-// Read status from the chip, returns nonzero if a conversion is in progress
+// ReadStatus from the chip, returns nonzero if a conversion is in progress
 func (v *SensorADS1115) ReadStatus(i2c *i2c.I2C) (uint16, error) {
 	t, err := v.ads.ReadConfig(i2c)
 	if err != nil {
@@ -163,7 +165,7 @@ func (v *SensorADS1115) ReadStatus(i2c *i2c.I2C) (uint16, error) {
 	return t, err
 }
 
-// Start a conversion if in single-shot mode
+// StartConversion if in single-shot mode
 func (v *SensorADS1115) StartConversion(i2c *i2c.I2C) error {
 	cfg, err := i2c.ReadRegU16BE(ADS1115_ADDR_CONFIG)
 	if err != nil {
@@ -177,9 +179,7 @@ func (v *SensorADS1115) StartConversion(i2c *i2c.I2C) error {
 	return nil
 }
 
-// Stopped Here
-
-// Read Lo Comprator Threshold from the chip
+// ReadLoThreshold from the chip
 func (v *SensorADS1115) ReadLoThreshold(i2c *i2c.I2C) (int16, error) {
 	t, err := i2c.ReadRegS16BE(ADS1115_ADDR_LO_THRESH)
 	if err != nil {
@@ -188,7 +188,7 @@ func (v *SensorADS1115) ReadLoThreshold(i2c *i2c.I2C) (int16, error) {
 	return t, err
 }
 
-// Read Hi Comprator Threshold from the chip
+// ReadHiThreshold from the chip
 func (v *SensorADS1115) ReadHiThreshold(i2c *i2c.I2C) (int16, error) {
 	t, err := i2c.ReadRegS16BE(ADS1115_ADDR_HI_THRESH)
 	if err != nil {
@@ -197,7 +197,7 @@ func (v *SensorADS1115) ReadHiThreshold(i2c *i2c.I2C) (int16, error) {
 	return t, err
 }
 
-// Read conversion value from the chip
+// ReadConversion value from the chip
 func (v *SensorADS1115) ReadConversion(i2c *i2c.I2C) (int16, error) {
 	t, err := i2c.ReadRegS16BE(ADS1115_ADDR_CONVERSION)
 	if err != nil {

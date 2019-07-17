@@ -21,7 +21,7 @@
 //
 //--------------------------------------------------------------------------------------------------
 
-//  go-ads1115 package implements controlling the A/D and reading sampled values for the ADS1115 A/D Converter
+// Package implements controlling the A/D and reading sampled values for the ADS1115 A/D Converter
 package ads
 
 import (
@@ -37,13 +37,12 @@ type SensorType int
 func (v SensorType) String() string {
 	if v == ADS1115 {
 		return "ADS1115"
-	} else {
-		return "!!! unknown !!!"
 	}
+	return "!!! unknown !!!"
 }
 
 const (
-	// Texas Instrument ADS1115 A/D Converter
+	// ADS1115 A/D Converter
 	ADS1115 SensorType = iota
 )
 
@@ -123,8 +122,7 @@ const (
 	COMP_QUE_MAX     = 3
 )
 
-// Abstract BMPx sensor interface
-// to control and gather data.
+// SensorInterface is an Abstract ADSx sensor interface
 type SensorInterface interface {
 
 	// ReadConfig reads configuration from the chip
@@ -181,6 +179,7 @@ type ADS struct {
 	ads        SensorInterface
 }
 
+// NewADS creats a new device interface
 func NewADS(sensorType SensorType, i2c *i2c.I2C) (*ADS, error) {
 	v := &ADS{sensorType: sensorType, i2c: i2c}
 	switch sensorType {
@@ -195,91 +194,91 @@ func NewADS(sensorType SensorType, i2c *i2c.I2C) (*ADS, error) {
 	return v, nil
 }
 
-// Read config from the chip
+// ReadConfig from the chip
 func (v *ADS) ReadConfig() (uint16, error) {
 	t, err := v.ads.ReadConfig(v.i2c)
 	return t, err
 }
 
-// Write config to the chip from the stored config data
+// WriteConfig to the chip from the stored config data
 func (v *ADS) WriteConfig() error {
 	err := v.ads.WriteConfig(v.i2c)
 	return err
 }
 
-// Set the input multiplexer in config
+// SetMuxMode in stored config
 func (v *ADS) SetMuxMode(imm uint16) error {
 	err := v.ads.SetMuxMode(imm)
 	return err
 }
 
-// Set the Programmable Gain Amplifier in config
+// SetPgaMode in stored config
 func (v *ADS) SetPgaMode(pm uint16) error {
 	err := v.ads.SetPgaMode(pm)
 	return err
 }
 
-// Set the conversion mode in stored config
+// SetConversionMode in stored config
 func (v *ADS) SetConversionMode(md uint16) error {
 	err := v.ads.SetConversionMode(md)
 	return err
 }
 
-// Set the data rate in stored config
+// SetDataRate in stored config
 func (v *ADS) SetDataRate(dr uint16) error {
 	err := v.ads.SetDataRate(dr)
 	return err
 }
 
-// Set the comparator mode in stored config
+// SetComparatorMode in stored config
 func (v *ADS) SetComparatorMode(cm uint16) error {
 	err := v.ads.SetComparatorMode(cm)
 	return err
 }
 
-//	Set the comparator polarity in stored config
+//	SetComparatorPolarity in stored config
 func (v *ADS) SetComparatorPolarity(cp uint16) error {
 	err := v.ads.SetComparatorPolarity(cp)
 	return err
 }
 
-//	Set the comparator latch in stored config
+//	SetComparatorLatch in stored config
 func (v *ADS) SetComparatorLatch(cl uint16) error {
 	err := v.ads.SetComparatorLatch(cl)
 	return err
 }
 
-//	Set the comparator queue in stored config
+//	SetComparatorQueue in stored config
 func (v *ADS) SetComparatorQueue(cq uint16) error {
 	err := v.ads.SetComparatorQueue(cq)
 	return err
 }
 
-// Read status from the chip
+// ReadStatus from the chip
 func (v *ADS) ReadStatus() (uint16, error) {
 	t, err := v.ads.ReadStatus(v.i2c)
 	return t, err
 }
 
-// Start a conversion if in single-shot mode
+// StartConversion if in single-shot mode
 func (v *ADS) StartConversion() error {
 	err := v.ads.StartConversion(v.i2c)
 	return err
 }
 
-// Read Lo Comprator Threshold from the chip
+// ReadLoThreshold for comparator from the chip
 func (v *ADS) ReadLoThreshold() (int16, error) {
 	t, err := v.ads.ReadLoThreshold(v.i2c)
 	return t, err
 }
 
-// Read Hi Comprator Threshold from the chip
+// ReadHiThreshold for comparator from the chip
 func (v *ADS) ReadHiThreshold() (int16, error) {
 	t, err := v.ads.ReadHiThreshold(v.i2c)
 	return t, err
 }
 
-// Read conversion value from the chip
+// ReadConversion value from the chip
 func (v *ADS) ReadConversion() (int16, error) {
 	t, err := v.ads.ReadConversion(v.i2c)
 	return t, err
