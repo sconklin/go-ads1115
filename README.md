@@ -1,13 +1,7 @@
-NOTE: This is an in-progress port of the bsbmp library to the ADS1115
-
-It's a mess until this warning is removed
-
-=======================================================================================================
-
 Texas Instruments ADS1115 four channel A/d
 =============================================================================================
 
-[![Build Status](https://travis-ci.org/sconklin/go-bsbmp.svg?branch=master)](https://travis-ci.org/sconklin/go-ads1115)
+[![Build Status](https://travis-ci.org/sconklin/go-ads1115.svg?branch=master)](https://travis-ci.org/sconklin/go-ads1115)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sconklin/go-ads1115)](https://goreportcard.com/report/github.com/sconklin/go-ads1115)
 [![GoDoc](https://godoc.org/github.com/sconklin/go-ads1115?status.svg)](https://godoc.org/github.com/sconklin/go-ads1115)
 [![MIT License](http://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
